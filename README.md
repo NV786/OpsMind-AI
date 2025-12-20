@@ -69,3 +69,38 @@ npm install
 cd frontend
 npm install
 ```
+
+### 4. Environment Variables
+Create a .env file inside the backend folder and add the following keys:
+
+```bash
+PORT=5000
+MONGO_URI=your_mongodb_atlas_connection_string
+GEMINI_API_KEY=your_google_gemini_api_key
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+```
+
+## Running the Application
+To run the full application, you need to open 3 separate terminals:
+
+### Terminal 1: Start the Backend API
+```bash
+cd backend
+npm run dev
+```
+Server runs on http://localhost:5000
+
+### Terminal 2: Start the AI Worker
+This process handles PDF parsing and embedding generation.
+```bash
+cd backend
+npm run worker
+```
+
+### Terminal 3: Start the Frontend
+```bash
+cd frontend
+npm run dev
+```
+App runs on http://localhost:5173
