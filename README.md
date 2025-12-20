@@ -7,8 +7,6 @@
 
 **OpsMind AI** is a full-stack application designed to process complex PDF documents and allow users to query them using natural language. Unlike standard chatbots, OpsMind uses a **Retrieval-Augmented Generation (RAG)** pipeline to fetch the exact source text and provides the **Filename and Page Number** for every answer.
 
-It uses **Google Gemini AI** for reasoning and **MongoDB Atlas** for vector storage. Heavy PDF processing is handled asynchronously using **BullMQ & Redis** to ensure the application remains fast and responsive.
-
 ---
 
 ## ✨ Key Features
@@ -32,7 +30,7 @@ It uses **Google Gemini AI** for reasoning and **MongoDB Atlas** for vector stor
 ### **Backend**
 - **Node.js & Express** - REST API server.
 - **LangChain** - Orchestration framework for LLM workflows.
-- **Google Generative AI** - LLM Model (Gemini 1.5 Flash).
+- **Google Generative AI** - LLM Model (Gemini 2.5 Flash).
 - **BullMQ & Redis** - Message queue for background job processing.
 - **Multer** - For handling file uploads.
 
@@ -56,3 +54,11 @@ Ensure you have the following installed:
 ```bash
 git clone [https://github.com/NV786/OpsMind-AI.git](https://github.com/NV786/OpsMind-AI.git)
 cd OpsMind-AI
+
+### 3. Install Dependencies
+You must install dependencies for both the backend and frontend.
+
+**Backend:**
+```bash
+cd backend
+npm install
