@@ -64,3 +64,8 @@ You must install dependencies for both the backend and frontend.
 cd backend
 npm install
 ```
+**Frontend**
+```bash
+cd frontend
+npm install
+```
