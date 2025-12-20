@@ -12,10 +12,10 @@
 ## ✨ Key Features
 
 - **📄 Smart PDF Parsing:** Extracts text while preserving page numbers for accurate referencing.
-- **🤖 RAG Pipeline:** Context-aware answers using **Google Gemini 1.5 Flash**.
+- **🤖 RAG Pipeline:** Context-aware answers using **Google Gemini 2.5 Flash**.
 - **🔍 Vector Search:** Semantic search capabilities powered by **MongoDB Atlas**.
 - **⚡ Asynchronous Processing:** Uses a dedicated Worker Queue (**BullMQ**) to handle large files in the background.
-- **📍 Precise Citations:** Every answer includes the exact source: e.g., *Ques.pdf (Page No. : 1)*.
+- **📍 Precise Citations:** Every answer includes the exact source and page no.
 - **🛡️ Scalable Architecture:** Decoupled Backend, Frontend, and Worker services.
 
 ---
