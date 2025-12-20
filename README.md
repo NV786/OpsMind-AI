@@ -54,6 +54,7 @@ Ensure you have the following installed:
 ```bash
 git clone [https://github.com/NV786/OpsMind-AI.git](https://github.com/NV786/OpsMind-AI.git)
 cd OpsMind-AI
+```
 
 ### 3. Install Dependencies
 You must install dependencies for both the backend and frontend.
@@ -62,3 +63,4 @@ You must install dependencies for both the backend and frontend.
 ```bash
 cd backend
 npm install
+```
