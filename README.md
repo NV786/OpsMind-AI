@@ -81,7 +81,7 @@ REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 ```
 
-## Running the Application
+## 🏃‍♂️ Running the Application
 To run the full application, you need to open 3 separate terminals:
 
 ### Terminal 1: Start the Backend API
