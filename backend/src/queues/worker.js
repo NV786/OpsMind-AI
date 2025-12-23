@@ -126,7 +126,7 @@ const worker = new Worker(
             await setJobStatus(jobId, "failed", { error: error.message });
         }
     },
-    { connection: { host: "127.0.0.1", port: 6379 } }
+    { connection: { host: "172.28.145.11", port: 6379 } }
 );
 
 console.log("PDF worker running");

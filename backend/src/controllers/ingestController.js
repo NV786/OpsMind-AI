@@ -3,7 +3,7 @@ import { Queue } from "bullmq";
 // Connecting to the same queue named as worker
 const pdfQueue = new Queue("pdf-queue", {
     connection: {
-        host: "127.0.0.1",
+        host: "172.28.145.11",
         port: 6379
     }
 });
