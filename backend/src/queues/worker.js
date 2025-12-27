@@ -1,3 +1,7 @@
+// worker.js
+import dotenv from "dotenv";
+dotenv.config();
+
 import { Worker } from "bullmq";
 import fs from "fs";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -6,11 +10,12 @@ import { storeVectors } from "../services/vectorStore.js";
 import { setJobStatus } from "../services/jobStatusStore.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Initialize Google Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const worker = new Worker(
     "pdf-queue",
-    async job => {
+    async (job) => {
         const jobId = job.id;
         const { filePath, filename } = job.data;
 
@@ -27,19 +32,18 @@ const worker = new Worker(
         }
 
         try {
-            // READS WITH GEMINI (Because it handles Scanned PDFs best)
+            // READ PDF WITH GEMINI
             console.log(`[Job ${jobId}] Sending PDF to Gemini for Page Analysis...`);
             await setJobStatus(jobId, "processing", { progress: 20, message: "AI reading document..." });
 
             const pdfBuffer = fs.readFileSync(filePath);
             const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-            // SMART PROMPT: We ask Gemini to insert markers between pages
             const result = await model.generateContent([
                 `You are a PDF extractor. Your job is to extract text exactly as it appears.
-                 IMPORTANT: You must insert the separator "|||PAGE_NUMBER_X|||" at the start of every new page, where X is the page number.
-                 Start the very first line with "|||PAGE_NUMBER_1|||".
-                 Do not summarize. Just extract text.`,
+         IMPORTANT: You must insert the separator "|||PAGE_NUMBER_X|||" at the start of every new page, where X is the page number.
+         Start the very first line with "|||PAGE_NUMBER_1|||".
+         Do not summarize. Just extract text.`,
                 {
                     inlineData: {
                         data: pdfBuffer.toString("base64"),
@@ -51,21 +55,16 @@ const worker = new Worker(
             const fullText = result.response.text();
             console.log(`[Job ${jobId}] AI extracted ${fullText.length} characters.`);
 
-            // PARSE: Split text by the markers
+            // SPLIT TEXT BY PAGE MARKERS
             await setJobStatus(jobId, "processing", { progress: 40, message: "Structuring pages..." });
-
-            // Split by our special tag
             const rawPages = fullText.split("|||PAGE_NUMBER_");
-
-            // Clean up the split results
             const structuredDocs = [];
 
             rawPages.forEach(segment => {
-                if (!segment.trim()) return; // Skip empty header
+                if (!segment.trim()) return;
 
-                // Extract the number
                 const splitIndex = segment.indexOf("|||");
-                if (splitIndex === -1) return; // Safety check
+                if (splitIndex === -1) return;
 
                 const pageNum = parseInt(segment.substring(0, splitIndex).trim());
                 const content = segment.substring(splitIndex + 3).trim();
@@ -78,18 +77,14 @@ const worker = new Worker(
                 }
             });
 
-            console.log(`[Job ${jobId}] Identified ${structuredDocs.length} pages via AI.`);
-
             if (structuredDocs.length === 0) {
-                // Fallback if AI didn't output markers correctly
-                console.log(`[Job ${jobId}] Page markers missing, treating as single page.`);
                 structuredDocs.push({
                     pageContent: fullText,
                     metadata: { loc: { pageNumber: 1 } }
                 });
             }
 
-            // CHUNK: Split large pages into smaller vectors
+            // CHUNK DOCUMENTS
             const splitter = new RecursiveCharacterTextSplitter({
                 chunkSize: 800,
                 chunkOverlap: 150
@@ -126,7 +121,11 @@ const worker = new Worker(
             await setJobStatus(jobId, "failed", { error: error.message });
         }
     },
-    { connection: { host: "172.28.145.11", port: 6379 } }
+    {
+        connection: {
+            url: process.env.REDIS_URL // Use the full Redis URL from .env
+        }
+    }
 );
 
 console.log("PDF worker running");

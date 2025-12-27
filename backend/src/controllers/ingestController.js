@@ -1,10 +1,9 @@
 import { Queue } from "bullmq";
 
-// Connecting to the same queue named as worker
+// Use the URL directly
 const pdfQueue = new Queue("pdf-queue", {
     connection: {
-        host: "172.28.145.11",
-        port: 6379
+        url: process.env.REDIS_URL // correct
     }
 });
 
@@ -16,8 +15,6 @@ export const ingestFile = async (req, res) => {
 
         const { path, originalname } = req.file;
 
-        // Adding the job to the queue
-        // We pass the file path so the worker can read it later
         const job = await pdfQueue.add("process-pdf", {
             filePath: path,
             filename: originalname
@@ -25,11 +22,10 @@ export const ingestFile = async (req, res) => {
 
         console.log(`[API] File received. Job ID: ${job.id}`);
 
-        // Responding immediately (don't wait for processing)
         res.status(202).json({
             message: "File uploaded successfully. Processing started.",
             jobId: job.id,
-            statusUrl: `/api/status/${job.id}` 
+            statusUrl: `/api/status/${job.id}`
         });
 
     } catch (error) {
