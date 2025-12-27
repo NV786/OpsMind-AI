@@ -77,8 +77,10 @@ Create a .env file inside the backend folder and add the following keys:
 PORT=5000
 MONGO_URI=your_mongodb_atlas_connection_string
 GEMINI_API_KEY=your_google_gemini_api_key
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
+REDIS_URL=redis://127.0.0.1:6379
+EMBEDDING_DIM=768
+SIMILARITY_THRESHOLD=0.7
+JWT_SECRET=super_long_random_secret_key_123456
 ```
 
 ## 🏃‍♂️ Running the Application
