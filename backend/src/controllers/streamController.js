@@ -1,4 +1,9 @@
 // src/controllers/streamController.js
+import { findSimilarDocuments } from "../services/ragService.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 export const streamHandler = async (req, res) => {
   // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
@@ -30,40 +35,67 @@ export const streamHandler = async (req, res) => {
       return;
     }
 
-    // Mock streaming response with citations
-    // In a real app, this would connect to your AI model
-    const mockResponses = [
-      { text: "Based on the research by ", citation: "Smith et al., 2023" },
-      { text: "published in the Journal of AI Research, ", citation: "AI Research, 2024" },
-      { text: "large language models demonstrate ", citation: "Johnson, 2023" },
-      { text: "significant improvements in understanding ", citation: "Tech Review, 2024" },
-      { text: "and generating human-like text. ", citation: "Smith et al., 2023" },
-      { text: "These advancements are particularly notable ", citation: "AI Research, 2024" },
-      { text: "in few-shot learning scenarios.", citation: "Johnson, 2023" }
-    ];
+    console.log(`User asked (streaming): "${query}"`);
 
-    // Stream chunks with delay to simulate real-time
-    for (let i = 0; i < mockResponses.length; i++) {
-      const chunk = mockResponses[i];
+    // Finding relevant chunks from uploaded documents
+    const relevantDocs = await findSimilarDocuments(query);
+    
+    console.log(`Found ${relevantDocs?.length || 0} relevant documents`);
+
+    if (!relevantDocs || relevantDocs.length === 0) {
+      const noDocsMessage = "I checked your uploaded documents, but I couldn't find any information relevant to your question.";
       
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Stream the message character by character
+      for (let i = 0; i < noDocsMessage.length; i++) {
+        sendEvent({
+          type: 'chunk',
+          content: noDocsMessage[i]
+        });
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      
+      sendEvent({ 
+        type: 'complete',
+        message: 'Streaming complete'
+      }, 'complete');
+      
+      res.end();
+      return;
+    }
+
+    // Preparing Context from relevant documents
+    const context = relevantDocs.map(doc => doc.text).join("\n\n---\n\n");
+
+    // Generate streaming response with Gemini
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `
+You are a smart AI assistant. Answer the user's question based ONLY on the provided Context below.
+Be concise and informative.
+
+CONTEXT:
+${context}
+
+USER QUESTION:
+${query}
+`;
+
+    const result = await model.generateContentStream(prompt);
+
+    // Stream the response chunks
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
       
       sendEvent({
         type: 'chunk',
-        content: chunk.text,
-        citation: chunk.citation,
-        citationId: `ref-${i + 1}`,
-        chunkIndex: i,
-        totalChunks: mockResponses.length
+        content: chunkText
       });
     }
 
     // Send completion event
     sendEvent({ 
       type: 'complete',
-      message: 'Streaming complete',
-      totalChunks: mockResponses.length
+      message: 'Streaming complete'
     }, 'complete');
 
   } catch (error) {
