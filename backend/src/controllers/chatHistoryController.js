@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const saveMessage = async (req, res) => {
     try {
         const { conversationId, role, content, sources } = req.body;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         if (!role || !content) {
             return res.status(400).json({ error: "Role and content are required" });
@@ -61,7 +61,7 @@ export const saveMessage = async (req, res) => {
 // Get all conversations for a user
 export const getConversations = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user._id;
         const { limit = 20, skip = 0 } = req.query;
 
         const conversations = await ChatHistory.find({ userId })
@@ -98,7 +98,7 @@ export const getConversations = async (req, res) => {
 export const getConversation = async (req, res) => {
     try {
         const { conversationId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const conversation = await ChatHistory.findOne({ userId, conversationId });
 
@@ -127,7 +127,7 @@ export const getConversation = async (req, res) => {
 export const deleteConversation = async (req, res) => {
     try {
         const { conversationId } = req.params;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const result = await ChatHistory.deleteOne({ userId, conversationId });
 
@@ -151,7 +151,7 @@ export const updateConversationTitle = async (req, res) => {
     try {
         const { conversationId } = req.params;
         const { title } = req.body;
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         if (!title) {
             return res.status(400).json({ error: "Title is required" });

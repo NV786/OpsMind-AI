@@ -35,13 +35,22 @@ const StreamingChat = () => {
     setCitations([]);
     setStreamedText('');
 
-    // Create SSE connection
+    // Get auth token
+    const token = localStorage.getItem('token');
+    
+    // Create SSE connection with token
     const eventSource = new EventSource(
-      `/api/stream?query=${encodeURIComponent(input)}`
+      `/api/stream?query=${encodeURIComponent(input)}&token=${token}`
     );
     eventSourceRef.current = eventSource;
 
-    let assistantMessageId = null;
+    let currentStreamedText = '';
+    let currentCitations = [];
+
+    // Connection opened
+    eventSource.addEventListener('connection', (event) => {
+      console.log('SSE connection established:', event.data);
+    });
 
     eventSource.onmessage = (event) => {
       try {
@@ -49,21 +58,25 @@ const StreamingChat = () => {
         
         if (data.type === 'chunk') {
           // Update streamed text
-          setStreamedText(prev => prev + data.content);
+          currentStreamedText += data.content;
+          setStreamedText(currentStreamedText);
 
           // Add citation if not already present
           if (data.citation) {
             setCitations(prev => {
               const exists = prev.some(c => c.id === data.citationId);
               if (!exists) {
-                return [...prev, {
+                const newCitation = {
                   id: data.citationId,
                   title: data.citation,
                   content: `Supporting evidence from ${data.citation} related to your query.`,
                   page: Math.floor(Math.random() * 50) + 1,
                   source: 'Research Paper'
-                }];
+                };
+                currentCitations = [...prev, newCitation];
+                return currentCitations;
               }
+              currentCitations = prev;
               return prev;
             });
           }
@@ -74,14 +87,15 @@ const StreamingChat = () => {
     };
 
     eventSource.addEventListener('complete', () => {
+      console.log('Stream complete, text length:', currentStreamedText.length);
       // Add the completed assistant message to messages
-      if (streamedText) {
+      if (currentStreamedText) {
         setMessages(prev => [...prev, {
           id: Date.now(),
           type: 'assistant',
-          content: streamedText,
+          content: currentStreamedText,
           timestamp: new Date().toLocaleTimeString(),
-          citations: citations.map(c => c.id)
+          citations: currentCitations.map(c => c.id)
         }]);
       }
       
@@ -90,12 +104,24 @@ const StreamingChat = () => {
       setStreamedText('');
     });
 
-    eventSource.addEventListener('error', (error) => {
+    eventSource.onerror = (error) => {
       console.error('SSE Error:', error);
+      
+      // If we have partial content, save it
+      if (currentStreamedText) {
+        setMessages(prev => [...prev, {
+          id: Date.now(),
+          type: 'assistant',
+          content: currentStreamedText,
+          timestamp: new Date().toLocaleTimeString(),
+          citations: currentCitations.map(c => c.id)
+        }]);
+        setStreamedText('');
+      }
+      
       eventSource.close();
       setIsStreaming(false);
-      setStreamedText('');
-    });
+    };
 
     setInput('');
   };

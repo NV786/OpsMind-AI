@@ -9,7 +9,8 @@ export async function storeVectors(docs, embeddings, extraMetadata) {
         text: doc.pageContent,           // The text content
         embedding: embeddings[i],        // The vector
         filename: extraMetadata.filename,// The filename
-        page: doc.metadata.loc.pageNumber, 
+        page: doc.metadata.loc.pageNumber,
+        userId: extraMetadata.userId,    // Store user ID for filtering
         createdAt: new Date()
     }));
 

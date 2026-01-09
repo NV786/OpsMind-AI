@@ -17,7 +17,8 @@ export const ingestFile = async (req, res) => {
 
         const job = await pdfQueue.add("process-pdf", {
             filePath: path,
-            filename: originalname
+            filename: originalname,
+            userId: req.user._id.toString()
         });
 
         console.log(`[API] File received. Job ID: ${job.id}`);

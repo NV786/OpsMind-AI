@@ -35,10 +35,10 @@ export const streamHandler = async (req, res) => {
       return;
     }
 
-    console.log(`User asked (streaming): "${query}"`);
+    console.log(`User ${req.user._id} asked (streaming): "${query}"`);
 
-    // Finding relevant chunks from uploaded documents
-    const relevantDocs = await findSimilarDocuments(query);
+    // Finding relevant chunks from uploaded documents (filtered by user)
+    const relevantDocs = await findSimilarDocuments(query, req.user._id.toString());
     
     console.log(`Found ${relevantDocs?.length || 0} relevant documents`);
 

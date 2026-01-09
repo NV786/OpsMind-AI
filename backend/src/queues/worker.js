@@ -17,7 +17,7 @@ const worker = new Worker(
     "pdf-queue",
     async (job) => {
         const jobId = job.id;
-        const { filePath, filename } = job.data;
+        const { filePath, filename, userId } = job.data;
 
         console.log(`[Job ${jobId}] Worker started processing: ${filename}`);
 
@@ -107,7 +107,7 @@ const worker = new Worker(
                 }
             }
 
-            await storeVectors(chunkedDocs, embeddings, { filename });
+            await storeVectors(chunkedDocs, embeddings, { filename, userId });
 
             await setJobStatus(jobId, "completed", {
                 progress: 100,

@@ -11,10 +11,10 @@ export const chatWithPDF = async (req, res) => {
             return res.status(400).json({ error: "Question is required" });
         }
 
-        console.log(`User asked: "${question}"`);
+        console.log(`User ${req.user._id} asked: "${question}"`);
 
-        // Finding relevant chunks
-        const relevantDocs = await findSimilarDocuments(question);
+        // Finding relevant chunks (filtered by user)
+        const relevantDocs = await findSimilarDocuments(question, req.user._id.toString());
 
         if (!relevantDocs || relevantDocs.length === 0) {
             return res.json({
