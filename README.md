@@ -1,8 +1,9 @@
 # 🧠 OpsMind AI
 
 > **Talk to your documents.** An intelligent RAG-based Chatbot that reads PDFs and answers questions with precise page citations.
+> 
+<img width="1366" height="768" alt="Screenshot (687)" src="https://github.com/user-attachments/assets/2e5df31f-5c84-4cc7-842a-d000bc225d89" />
 
-![OpsMind Banner](https://via.placeholder.com/1200x300?text=OpsMind+AI+-+Intelligent+Document+Analysis)
 ## 🚀 Overview
 
 **OpsMind AI** is a full-stack application designed to process complex PDF documents and allow users to query them using natural language. Unlike standard chatbots, OpsMind uses a **Retrieval-Augmented Generation (RAG)** pipeline to fetch the exact source text and provides the **Filename and Page Number** for every answer.
