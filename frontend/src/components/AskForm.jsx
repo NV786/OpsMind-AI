@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../config/axios';
 
 export default function AskForm() {
     const [q, setQ] = useState('');
@@ -25,7 +25,7 @@ export default function AskForm() {
         setQ('');
         
         try {
-            const res = await axios.post('http://localhost:5000/api/chat', { question: q });
+            const res = await api.post('/chat', { question: q });
             const aiMessage = { 
                 type: 'ai', 
                 content: res.data.answer,

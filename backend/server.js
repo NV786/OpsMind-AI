@@ -8,7 +8,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // 1. Middleware
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:5173', // Local dev
+        'https://your-frontend.onrender.com', // Production
+        process.env.FRONTEND_URL
+    ],
+    credentials: true
+}));
 app.use(express.json()); // Allows parsing JSON body
 
 // 2. Connect to Database

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../config/axios';
 
 export default function UploadForm() {
     const [file, setFile] = useState(null);
@@ -22,7 +22,7 @@ export default function UploadForm() {
             setStatus('Uploading...');
             setUploadProgress(30);
 
-            const res = await axios.post('http://localhost:5000/api/ingest', fd, {
+            const res = await api.post('/ingest', fd, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round(

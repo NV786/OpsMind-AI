@@ -1,5 +1,6 @@
 // src/components/StreamingChat.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import { STREAM_URL } from '../config/axios';
 
 const StreamingChat = () => {
   const [messages, setMessages] = useState([]);
@@ -40,7 +41,7 @@ const StreamingChat = () => {
     
     // Create SSE connection with token
     const eventSource = new EventSource(
-      `/api/stream?query=${encodeURIComponent(input)}&token=${token}`
+      `${STREAM_URL}?query=${encodeURIComponent(input)}&token=${token}`
     );
     eventSourceRef.current = eventSource;
 

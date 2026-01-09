@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import UnifiedChat from './UnifiedChat';
-import axios from 'axios';
+import api from '../config/axios';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -17,10 +17,7 @@ export default function Dashboard() {
   const fetchConversations = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/history/conversations', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/history/conversations');
       setConversations(response.data?.conversations || []);
     } catch (error) {
       console.error('Error fetching conversations:', error);
@@ -48,10 +45,7 @@ export default function Dashboard() {
     if (!window.confirm('Delete this conversation?')) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/history/conversation/${conversationId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/history/conversation/${conversationId}`);
       setConversations(conversations.filter(c => c.conversationId !== conversationId));
       if (selectedConversationId === conversationId) {
         setSelectedConversationId(null);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
+import api, { STREAM_URL } from '../config/axios';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function UnifiedChat({ conversationId, onConversationStart }) {
@@ -25,10 +25,7 @@ export default function UnifiedChat({ conversationId, onConversationStart }) {
 
   const loadConversation = useCallback(async (convId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/history/conversation/${convId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/history/conversation/${convId}`);
 
       const conversation = response.data.conversation;
       
@@ -49,13 +46,11 @@ export default function UnifiedChat({ conversationId, onConversationStart }) {
 
   const saveMessage = async (role, content, sources = []) => {
     try {
-      const token = localStorage.getItem('token');
       const convId = currentConversationId || uuidv4();
       
-      const response = await axios.post(
-        '/api/history/message',
-        { conversationId: convId, role, content, sources },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await api.post(
+        '/history/message',
+        { conversationId: convId, role, content, sources }
       );
 
       if (!currentConversationId) {
@@ -90,11 +85,9 @@ export default function UnifiedChat({ conversationId, onConversationStart }) {
     formData.append('file', selectedFile); // Changed from 'pdf' to 'file'
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('/api/ingest', formData, {
+      const response = await api.post('/ingest', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
+          'Content-Type': 'multipart/form-data'
         },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -176,7 +169,7 @@ export default function UnifiedChat({ conversationId, onConversationStart }) {
     // Create SSE connection with token in URL
     const token = localStorage.getItem('token');
     const eventSource = new EventSource(
-      `/api/stream?query=${encodeURIComponent(input.trim() || 'Analyze this document')}&token=${token}`
+      `${STREAM_URL}?query=${encodeURIComponent(input.trim() || 'Analyze this document')}&token=${token}`
     );
     eventSourceRef.current = eventSource;
 

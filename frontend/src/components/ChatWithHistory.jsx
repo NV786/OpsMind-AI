@@ -1,6 +1,6 @@
 // src/components/ChatWithHistory.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api, { STREAM_URL } from '../config/axios';
 import ChatHistory from './ChatHistory';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -25,13 +25,11 @@ const ChatWithHistory = () => {
 
   const saveMessage = async (role, content, sources = []) => {
     try {
-      const token = localStorage.getItem('token');
       const conversationId = currentConversationId || uuidv4();
       
-      await axios.post(
-        '/api/history/message',
-        { conversationId, role, content, sources },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.post(
+        '/history/message',
+        { conversationId, role, content, sources }
       );
 
       if (!currentConversationId) {
@@ -44,10 +42,7 @@ const ChatWithHistory = () => {
 
   const loadConversation = async (conversationId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/history/conversation/${conversationId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/history/conversation/${conversationId}`);
 
       const conversation = response.data.conversation;
       
@@ -102,7 +97,7 @@ const ChatWithHistory = () => {
 
     // Create SSE connection
     const eventSource = new EventSource(
-      `/api/stream?query=${encodeURIComponent(userMessage)}`
+      `${STREAM_URL}?query=${encodeURIComponent(userMessage)}`
     );
     eventSourceRef.current = eventSource;
 

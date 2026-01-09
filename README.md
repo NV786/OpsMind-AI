@@ -71,17 +71,22 @@ npm install
 ```
 
 ### 4. Environment Variables
-Create a .env file inside the backend folder and add the following keys:
 
+**Backend (.env in backend folder):**
 ```bash
 PORT=5000
 MONGO_URI=your_mongodb_atlas_connection_string
 GEMINI_API_KEY=your_google_gemini_api_key
 REDIS_URL=redis://127.0.0.1:6379
-EMBEDDING_DIM=768
-SIMILARITY_THRESHOLD=0.7
 JWT_SECRET=super_long_random_secret_key_123456
 ```
+
+**Frontend (.env in frontend folder):**
+```bash
+VITE_API_URL=http://localhost:5000/api
+```
+
+**Note:** For production deployment, update `VITE_API_URL` to your backend URL (e.g., `https://your-backend.onrender.com/api`)
 
 ## 🏃‍♂️ Running the Application
 To run the full application, you need to open 3 separate terminals:

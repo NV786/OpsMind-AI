@@ -1,6 +1,6 @@
 // src/components/ChatHistory.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../config/axios';
 
 const ChatHistory = ({ onSelectConversation, currentConversationId }) => {
   const [conversations, setConversations] = useState([]);
@@ -16,10 +16,7 @@ const ChatHistory = ({ onSelectConversation, currentConversationId }) => {
   const fetchConversations = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/history/conversations', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/history/conversations');
       setConversations(response.data?.conversations || []);
     } catch (error) {
       console.error('Error fetching conversations:', error);
@@ -31,10 +28,7 @@ const ChatHistory = ({ onSelectConversation, currentConversationId }) => {
 
   const deleteConversation = async (conversationId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`/api/history/conversation/${conversationId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/history/conversation/${conversationId}`);
       setConversations(conversations.filter(c => c.conversationId !== conversationId));
       setShowDeleteConfirm(null);
     } catch (error) {
@@ -44,11 +38,9 @@ const ChatHistory = ({ onSelectConversation, currentConversationId }) => {
 
   const updateTitle = async (conversationId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `/api/history/conversation/${conversationId}/title`,
-        { title: newTitle },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.patch(
+        `/history/conversation/${conversationId}/title`,
+        { title: newTitle }
       );
       setConversations(conversations.map(c =>
         c.conversationId === conversationId ? { ...c, title: newTitle } : c
