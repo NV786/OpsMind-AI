@@ -1,0 +1,38 @@
+{
+  "name": "opsmind-backend",
+  "version": "1.0.0",
+  "description": "RAG backend with LangChain, BullMQ, Redis, MongoDB Atlas Vector Search, Gemini, Node.js/Express",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "worker": "node src/queues/worker.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@langchain/community": "^0.3.58",
+    "@langchain/core": "0.3.58",
+    "@langchain/mongodb": "^0.0.3",
+    "@xenova/transformers": "^2.17.2",
+    "bcryptjs": "^3.0.3",
+    "bullmq": "^5.12.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.3",
+    "langchain": "0.3.9",
+    "mongodb": "^6.8.0",
+    "mongoose": "^9.0.2",
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.4",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
