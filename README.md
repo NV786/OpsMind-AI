@@ -3,6 +3,7 @@
 > **Talk to your documents.** An intelligent RAG-based Chatbot that reads PDFs and answers questions with precise page citations.
 
 <img width="1366" height="768" alt="Screenshot (713)" src="https://github.com/user-attachments/assets/e3ee0f55-f577-43df-9d05-0097cb4f08de" />
+
 <img width="1366" height="768" alt="Screenshot (712)" src="https://github.com/user-attachments/assets/8addc0f3-bfbd-421c-94dd-47e928db3143" />
 
 
